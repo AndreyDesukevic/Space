@@ -8,20 +8,33 @@ namespace Space.Api.Controllers;
 public class DebugController : ControllerBase
 {
     private readonly IMeteoriteSyncClient _client;
+    private readonly IMeteoriteService _meteoriteService;
 
-    public DebugController(IMeteoriteSyncClient client)
+    public DebugController(IMeteoriteSyncClient client, IMeteoriteService meteoriteService)
     {
         _client = client;
+        _meteoriteService = meteoriteService;
     }
 
     [HttpGet("test-sync")]
     public async Task<IActionResult> TestSync()
     {
+       
         var dtos = await _client.GetMeteoritesAsync();
+        
         return Ok(new
         {
             Count = dtos.Count(),
             Sample = dtos.Take(5)
         });
+    }
+
+    [HttpGet("test-full-sync")]
+    public async Task<IActionResult> TestFullSync()
+    {
+
+        await _meteoriteService.SyncAsync();
+
+        return Ok();
     }
 }

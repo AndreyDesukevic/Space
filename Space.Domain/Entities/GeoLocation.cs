@@ -1,11 +1,12 @@
-﻿namespace Space.Infrastructure.Domain.Entities;
+﻿using Space.Domain.Entities;
 
-public class GeoLocation
+namespace Space.Infrastructure.Domain.Entities;
+
+public class Geolocation : IBaseEntity
 {
     public int Id { get; set; }
-
-    public int? GeoTypeId { get; set; }
-    public virtual GeoType? GeoType { get; set; }
+    public int? GeolocationTypeId { get; set; }
+    public virtual GeolocationType? GeolocationType { get; set; }
 
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }

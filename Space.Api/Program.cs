@@ -6,7 +6,9 @@ using Polly;
 using Polly.Extensions.Http;
 using Serilog;
 using Space.Application.Interfaces;
+using Space.Application.Jobs;
 using Space.Application.Mapping;
+using Space.Application.Services;
 using Space.Infrastructure.Database;
 using Space.Infrastructure.Extensions;
 using Space.Infrastructure.HttpClients;
@@ -59,6 +61,21 @@ builder.Services.AddHttpClient("MeteoriteClient", client =>
 .AddPolicyHandler(GetCircuitBreakerPolicy());
 
 builder.Services.AddScoped<IMeteoriteSyncClient, MeteoriteSyncClient>();
+builder.Services.AddScoped<IMeteoriteService, MeteoriteService>();
+builder.Services.AddScoped<IMeteoriteSyncJob, MeteoriteSyncJob>();
+builder.Services.AddScoped<IRecClassService, RecClassService>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 
 static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
 {
@@ -81,12 +98,16 @@ static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
 builder.Services.AddAutoMapper(cfg => { }, typeof(MeteoriteProfile));
 builder.Services.AddRepositories();
 builder.Services.AddHangfireServer();
+builder.Services.AddMemoryCache();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+builder.Services.AddSwaggerGen(options =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "SpaceSync API", Version = "v1" });
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "SpaceSync API", Version = "v1" });
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
 });
 
 builder.Services.Configure<MeteorDataOptions>(builder.Configuration.GetSection("MeteorData"));
@@ -127,6 +148,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHangfireDashboard("/hangfire");
 
+RecurringJob.AddOrUpdate<IMeteoriteSyncJob>(
+    "MeteoriteSyncJob_Daily",
+    job =>job.RunAsync(),
+    Cron.Daily);
+
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 app.MapControllers();
 

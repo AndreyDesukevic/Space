@@ -1,8 +1,9 @@
 ﻿using Space.Domain.Models;
+using System.Runtime.CompilerServices;
 
 namespace Space.Application.Interfaces;
 
 public interface IMeteoriteSyncClient
 {
-    Task<IEnumerable<MeteoriteDto>> GetMeteoritesAsync(CancellationToken cancellationToken = default);
+    IAsyncEnumerable<MeteoriteDto> GetMeteoritesStreamAsync([EnumeratorCancellation] CancellationToken cancellationToken = default);
 }

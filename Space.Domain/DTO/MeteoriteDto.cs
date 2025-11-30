@@ -18,15 +18,15 @@ public class MeteoriteDto
 
     public string? Year { get; set; }
 
-    public string? Reclat { get; set; }
+    public string? RecLat { get; set; }
 
     public string? RecLong { get; set; }
 
-    public GeoLocationDto? GeoLocation { get; set; }
+    public GeolocationDto? Geolocation { get; set; }
 
     [JsonPropertyName(":@computed_region_cbhk_fwbd")]
-    public string? RawRegionByDistrict { get; set; }
+    public string? RegionDistrictRaw { get; set; }
 
     [JsonPropertyName(":@computed_region_nnqa_25f4")]
-    public string? RawRegionByGeozone { get; set; }
+    public string? RegionGeoZoneRaw { get; set; }
 }
