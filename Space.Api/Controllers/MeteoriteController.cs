@@ -99,7 +99,7 @@ public class MeteoriteController : ControllerBase
         if (q.PageSize < 1 || q.PageSize > 500) return (false, "PageSize must be between 1 and 500");
         if (q.YearFrom.HasValue && q.YearTo.HasValue && q.YearFrom > q.YearTo) return (false, "YearFrom must be <= YearTo");
 
-        var allowedFields = new[] { "year", "count", "totalMass" };
+        var allowedFields = new[] { "year", "count", "totalmass" };
         var allowedOrders = new[] { "asc", "desc" };
 
         if (!string.IsNullOrEmpty(q.SortField) && !allowedFields.Contains(q.SortField.ToLower()))

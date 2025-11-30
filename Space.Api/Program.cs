@@ -70,7 +70,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173")
+            .WithOrigins("http://localhost:5173", "http://104.248.32.16")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -115,14 +115,15 @@ builder.Services.Configure<MeteorDataOptions>(builder.Configuration.GetSection("
 
 var app = builder.Build();
 
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+    options.RoutePrefix = "swagger";
+});
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-    });
-
     try
     {
         var swaggerUrl = "https://localhost:5001/swagger/index.html";
@@ -145,12 +146,11 @@ if (app.Environment.IsDevelopment())
     }
 }
 
-
 app.UseHangfireDashboard("/hangfire");
 
 RecurringJob.AddOrUpdate<IMeteoriteSyncJob>(
     "MeteoriteSyncJob_Daily",
-    job =>job.RunAsync(),
+    job => job.RunAsync(),
     Cron.Daily);
 
 app.UseCors("AllowFrontend");
