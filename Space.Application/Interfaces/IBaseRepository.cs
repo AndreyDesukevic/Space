@@ -1,14 +1,10 @@
-﻿using System.Linq.Expressions;
+﻿using Space.Domain.Entities;
+using System.Linq.Expressions;
 
 namespace Space.Infrastructure.Application;
 
-public interface IBaseRepository<TEntity> where TEntity : class
+public interface IBaseRepository<TEntity> where TEntity : class, IBaseEntity
 {
-    IQueryable<TEntity> GetAll(bool asNoTracking = false, params Expression<Func<TEntity, object>>[] includes);
-    IQueryable<TEntity> Find(Expression<Func<TEntity, bool>> predicate, bool asNoTracking = false, params Expression<Func<TEntity, object>>[] includes);
-    void Add(TEntity entity);
-    void AddRange(IEnumerable<TEntity> entities);
-    void Update(TEntity entity);
-    void Remove(TEntity entity);
-    Task SaveChangesAsync();
+    Task <IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default, bool asNoTracking = false, params Expression<Func<TEntity, object>>[] includes);
+    Task BulkInsertOrUpdateAsync(IEnumerable<TEntity> entities, string? updateByProperty, CancellationToken cancellationToken = default);
 }

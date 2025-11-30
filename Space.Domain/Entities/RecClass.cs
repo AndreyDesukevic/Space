@@ -1,6 +1,8 @@
-﻿namespace Space.Infrastructure.Domain.Entities;
+﻿using Space.Domain.Entities;
 
-public class RecClass
+namespace Space.Infrastructure.Domain.Entities;
+
+public class RecClass : IBaseEntity
 {
     public int Id { get; set; }
     public required string Name { get; set; }

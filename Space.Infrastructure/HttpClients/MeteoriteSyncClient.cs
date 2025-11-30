@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Space.Application.Interfaces;
 using Space.Domain.Models;
 using Space.Infrastructure.Options;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace Space.Infrastructure.HttpClients;
@@ -23,39 +24,27 @@ public class MeteoriteSyncClient : IMeteoriteSyncClient
         _logger = logger;
     }
 
-    public async Task<IEnumerable<MeteoriteDto>> GetMeteoritesAsync(CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<MeteoriteDto> GetMeteoritesStreamAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var client = _httpClientFactory.CreateClient("MeteoriteClient");
 
-        try
-        {
-            _logger.LogInformation("Запрос данных метеоритов с {Url}", _options.SourceUrl);
+        _logger.LogInformation("Requesting meteorite data from {Url}", _options.SourceUrl);
 
-            using var response = await client.GetAsync(_options.SourceUrl, cancellationToken);
-            response.EnsureSuccessStatusCode();
+        using var response = await client.GetAsync(_options.SourceUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        response.EnsureSuccessStatusCode();
 
-            using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            var dtos = await JsonSerializer.DeserializeAsync<IEnumerable<MeteoriteDto>>(stream,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true },
-                cancellationToken);
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-            _logger.LogInformation("Получено {Count} объектов", dtos?.Count() ?? 0);
-            return dtos ?? Enumerable.Empty<MeteoriteDto>();
-        }
-        catch (HttpRequestException ex)
+        _logger.LogInformation("Starting meteorite data streaming...");
+
+        await foreach (var dto in JsonSerializer.DeserializeAsyncEnumerable<MeteoriteDto>(stream, options, cancellationToken))
         {
-            _logger.LogError(ex, "Ошибка HTTP при получении метеоритов");
-            return Enumerable.Empty<MeteoriteDto>();
+            if (dto != null)
+                yield return dto;
         }
-        catch (JsonException ex)
-        {
-            _logger.LogError(ex, "Ошибка при десериализации JSON");
-            return Enumerable.Empty<MeteoriteDto>();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Неизвестная ошибка при получении метеоритов");
-            return Enumerable.Empty<MeteoriteDto>();
-        }
+
+        _logger.LogInformation("Meteorite data stream completed.");
+
     }
 }

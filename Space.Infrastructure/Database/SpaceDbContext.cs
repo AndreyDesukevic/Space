@@ -6,10 +6,10 @@ namespace Space.Infrastructure.Database;
 public class SpaceDbContext : DbContext
 {
     public DbSet<Meteorite> Meteorites { get; set; }
-    public DbSet<GeoLocation> GeoLocations { get; set; }
+    public DbSet<Geolocation> Geolocations { get; set; }
     public DbSet<NameType> NameTypes { get; set; }
     public DbSet<RecClass> RecClasses { get; set; }
-    public DbSet<GeoType> GeoTypes { get; set; }
+    public DbSet<GeolocationType> GeolocationTypes { get; set; }
 
     public SpaceDbContext(DbContextOptions<SpaceDbContext> options) : base(options) { }
 
@@ -23,7 +23,7 @@ public class SpaceDbContext : DbContext
 
             entity.HasOne(e => e.GeoLocation)
                   .WithOne(g => g.Meteorite)
-                  .HasForeignKey<GeoLocation>(g => g.MeteoriteId)
+                  .HasForeignKey<Geolocation>(g => g.MeteoriteId)
                   .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(e => e.NameType)
@@ -35,20 +35,20 @@ public class SpaceDbContext : DbContext
                   .HasForeignKey(e => e.RecClassId);
         });
 
-        modelBuilder.Entity<GeoLocation>(entity =>
+        modelBuilder.Entity<Geolocation>(entity =>
         {
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.Latitude).HasPrecision(18, 6);
             entity.Property(e => e.Longitude).HasPrecision(18, 6);
 
-            entity.HasOne(e => e.GeoType)
+            entity.HasOne(e => e.GeolocationType)
                   .WithMany(g => g.GeoLocations)
-                  .HasForeignKey(e => e.GeoTypeId);
+                  .HasForeignKey(e => e.GeolocationTypeId);
 
             entity.HasOne(e => e.Meteorite)
                   .WithOne(m => m.GeoLocation)
-                  .HasForeignKey<GeoLocation>(g => g.MeteoriteId)
+                  .HasForeignKey<Geolocation>(g => g.MeteoriteId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
@@ -56,18 +56,21 @@ public class SpaceDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(100);
+            entity.HasIndex(e => e.Name).IsUnique();
         });
 
         modelBuilder.Entity<RecClass>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(100);
+            entity.HasIndex(e => e.Name).IsUnique();
         });
 
-        modelBuilder.Entity<GeoType>(entity =>
+        modelBuilder.Entity<GeolocationType>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(50);
+            entity.HasIndex(e => e.Name).IsUnique();
         });
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Space.Application.Interfaces;
 using Space.Infrastructure.Application;
 using Space.Infrastructure.Database;
 using Space.Infrastructure.Domain.Entities;
@@ -9,11 +10,11 @@ public static class RepositoryExtensions
 {
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IBaseRepository<Meteorite>, BaseRepository<Meteorite>>();
-        services.AddScoped<IBaseRepository<GeoLocation>, BaseRepository<GeoLocation>>();
+        services.AddScoped<IMeteoriteRepository, MeteoriteRepository>();
+        services.AddScoped<IBaseRepository<Geolocation>, BaseRepository<Geolocation>>();
         services.AddScoped<IBaseRepository<NameType>, BaseRepository<NameType>>();
         services.AddScoped<IBaseRepository<RecClass>, BaseRepository<RecClass>>();
-        services.AddScoped<IBaseRepository<GeoType>, BaseRepository<GeoType>>();
+        services.AddScoped<IBaseRepository<GeolocationType>, BaseRepository<GeolocationType>>();
 
         return services;
     }

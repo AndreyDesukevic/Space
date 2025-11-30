@@ -1,8 +1,8 @@
 ﻿namespace Space.Domain.Models;
 
-public class GeoLocationDto
+public class GeolocationDto
 {
     public string Type { get; set; }
 
-    public decimal[]? Coordinates { get; set; }
+    public double[]? Coordinates { get; set; }
 }
