@@ -1,0 +1,33 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+
+      - name: Copy backend to server
+        run: |
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} \
+          "mkdir -p /apps/space-backend"
+          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" ./ root@${{ secrets.SERVER_IP }}:/apps/space-backend/
+
+      - name: Build and run Docker on server
+        run: |
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} << 'EOF'
+          cd /apps/space-backend/Space.Api
+          docker compose -f /apps/space-backend/docker-compose.yml build
+          docker compose -f /apps/space-backend/docker-compose.yml up -d
+          EOF
