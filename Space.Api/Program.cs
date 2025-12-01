@@ -5,6 +5,7 @@ using Microsoft.OpenApi;
 using Polly;
 using Polly.Extensions.Http;
 using Serilog;
+using Space.Api.Auth;
 using Space.Application.Interfaces;
 using Space.Application.Jobs;
 using Space.Application.Mapping;
@@ -145,7 +146,10 @@ if (app.Environment.IsDevelopment())
     }
 }
 
-app.UseHangfireDashboard("/hangfire");
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new AllowAllDashboardAuthorization() }
+});
 
 RecurringJob.AddOrUpdate<IMeteoriteSyncJob>(
     "MeteoriteSyncJob_Daily",
