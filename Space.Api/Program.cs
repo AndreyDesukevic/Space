@@ -153,7 +153,7 @@ RecurringJob.AddOrUpdate<IMeteoriteSyncJob>(
     Cron.Daily);
 
 app.UseCors("AllowFrontend");
-app.UseHttpsRedirection();
+
 app.MapControllers();
 
 app.Run();
