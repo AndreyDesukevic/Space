@@ -48,8 +48,8 @@ public class MeteoriteRepository : BaseRepository<Meteorite>, IMeteoriteReposito
 
         groupedQuery = query.SortField switch
         {
-            "Count" => asc ? groupedQuery.OrderBy(g => g.Count) : groupedQuery.OrderByDescending(g => g.Count),
-            "TotalMass" => asc ? groupedQuery.OrderBy(g => g.TotalMass) : groupedQuery.OrderByDescending(g => g.TotalMass),
+            "count" => asc ? groupedQuery.OrderBy(g => g.Count) : groupedQuery.OrderByDescending(g => g.Count),
+            "totalMass" => asc ? groupedQuery.OrderBy(g => g.TotalMass) : groupedQuery.OrderByDescending(g => g.TotalMass),
             _ => asc ? groupedQuery.OrderBy(g => g.Year) : groupedQuery.OrderByDescending(g => g.Year),
         };
 
