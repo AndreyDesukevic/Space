@@ -33,6 +33,12 @@ public class SpaceDbContext : DbContext
             entity.HasOne(e => e.RecClass)
                   .WithMany(r => r.Meteorites)
                   .HasForeignKey(e => e.RecClassId);
+
+            entity.HasIndex(e => e.Year);
+
+            entity.HasIndex(e => e.RecClassId);
+
+            entity.HasIndex(e => new { e.Year, e.RecClassId });
         });
 
         modelBuilder.Entity<Geolocation>(entity =>
