@@ -1,13 +1,16 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /app
 
-COPY ../*.sln ./
-COPY ../Space.Api/*.csproj ./Space.Api/
-COPY ../Space.Application/*.csproj ./Space.Application/
-COPY ../Space.Infrastructure/*.csproj ./Space.Infrastructure/
+COPY *.sln ./
+COPY Space.Api/*.csproj Space.Api/
+COPY Space.Application/*.csproj Space.Application/
+COPY Space.Infrastructure/*.csproj Space.Infrastructure/
+COPY Space.Domain/*.csproj Space.Domain/
+
 RUN dotnet restore
 
-COPY .. .
+COPY . .
+
 WORKDIR /app/Space.Api
 RUN dotnet publish -c Release -o /app/publish
 
