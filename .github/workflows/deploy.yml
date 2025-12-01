@@ -14,14 +14,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.8.1
+        uses: webfactory/ssh-agent@v0.8
         with:
           ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
 
       - name: Copy backend to server
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} \
-          "mkdir -p /apps/space-backend"
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} "mkdir -p /apps/space-backend"
           rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" ./ root@${{ secrets.SERVER_IP }}:/apps/space-backend/
 
       - name: Build and run Docker on server
