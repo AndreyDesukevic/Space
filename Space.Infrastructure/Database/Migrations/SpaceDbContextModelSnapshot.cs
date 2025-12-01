@@ -71,6 +71,9 @@ namespace Space.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("GeolocationTypes");
                 });
 
@@ -120,6 +123,10 @@ namespace Space.Infrastructure.Database.Migrations
 
                     b.HasIndex("RecClassId");
 
+                    b.HasIndex("Year");
+
+                    b.HasIndex("Year", "RecClassId");
+
                     b.ToTable("Meteorites");
                 });
 
@@ -138,6 +145,9 @@ namespace Space.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("NameTypes");
                 });
 
@@ -155,6 +165,9 @@ namespace Space.Infrastructure.Database.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("RecClasses");
                 });
