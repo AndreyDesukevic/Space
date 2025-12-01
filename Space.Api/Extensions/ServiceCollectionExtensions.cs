@@ -9,8 +9,9 @@ using Space.Application.Interfaces;
 using Space.Application.Jobs;
 using Space.Application.Mapping;
 using Space.Application.Services;
+using Space.Infrastructure.Application;
 using Space.Infrastructure.Database;
-using Space.Infrastructure.Extensions;
+using Space.Infrastructure.Domain.Entities;
 using Space.Infrastructure.HttpClients;
 using Space.Infrastructure.Options;
 
@@ -95,7 +96,12 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IMeteoriteService, MeteoriteService>();
         services.AddScoped<IMeteoriteSyncJob, MeteoriteSyncJob>();
         services.AddScoped<IRecClassService, RecClassService>();
-        services.AddRepositories();
+
+        services.AddScoped<IMeteoriteRepository, MeteoriteRepository>();
+        services.AddScoped<IBaseRepository<Geolocation>, BaseRepository<Geolocation>>();
+        services.AddScoped<IBaseRepository<NameType>, BaseRepository<NameType>>();
+        services.AddScoped<IBaseRepository<RecClass>, BaseRepository<RecClass>>();
+        services.AddScoped<IBaseRepository<GeolocationType>, BaseRepository<GeolocationType>>();
 
         return services;
     }
