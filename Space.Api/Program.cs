@@ -22,7 +22,6 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(5000);
-    options.ListenAnyIP(5001, listenOptions => listenOptions.UseHttps());
 });
 
 
@@ -126,7 +125,7 @@ if (app.Environment.IsDevelopment())
 {
     try
     {
-        var swaggerUrl = "https://localhost:5001/swagger/index.html";
+        var swaggerUrl = "http://localhost:5000/swagger/index.html";
         if (OperatingSystem.IsWindows())
         {
             Process.Start(new ProcessStartInfo { FileName = swaggerUrl, UseShellExecute = true });
