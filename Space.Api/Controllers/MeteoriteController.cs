@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Space.Application.Interfaces;
 using Space.Domain.DTO;
 using Space.Domain.Responses;
@@ -58,19 +57,8 @@ public class MeteoriteController : ControllerBase
     [HttpGet("summary")]
     public async Task<ActionResult<PaginatedResponse<MeteoriteSummaryDto>>> GetSummary([FromQuery] MeteoriteQueryParams query, CancellationToken cancellationToken)
     {
-        var (isValid, error) = Validate(query);
-        if (!isValid) return BadRequest(error);
-
-        try
-        {
-            var result = await _meteoriteService.GetSummaryAsync(query, cancellationToken);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error while getting meteorite summary");
-            return StatusCode(500, "Internal server error");
-        }
+        var result = await _meteoriteService.GetSummaryAsync(query, cancellationToken);
+        return Ok(result);
     }
 
 
@@ -81,33 +69,7 @@ public class MeteoriteController : ControllerBase
     [HttpGet("year-range")]
     public async Task<ActionResult<YearRangeDto>> GetYearRange(CancellationToken cancellationToken)
     {
-        try
-        {
-            var range = await _meteoriteService.GetYearRangeAsync(cancellationToken);
-            return Ok(range);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error while getting year range");
-            return StatusCode(500, "Internal server error");
-        }
-    }
-
-    private (bool IsValid, string? Error) Validate(MeteoriteQueryParams q)
-    {
-        if (q.Page < 1) return (false, "Page must be >= 1");
-        if (q.PageSize < 1 || q.PageSize > 500) return (false, "PageSize must be between 1 and 500");
-        if (q.YearFrom.HasValue && q.YearTo.HasValue && q.YearFrom > q.YearTo) return (false, "YearFrom must be <= YearTo");
-
-        var allowedFields = new[] { "year", "count", "totalmass" };
-        var allowedOrders = new[] { "asc", "desc" };
-
-        if (!string.IsNullOrEmpty(q.SortField) && !allowedFields.Contains(q.SortField.ToLower()))
-            return (false, "SortField must be one of: year, count, totalMass");
-
-        if (!string.IsNullOrEmpty(q.SortOrder) && !allowedOrders.Contains(q.SortOrder.ToLower()))
-            return (false, "SortOrder must be asc or desc");
-
-        return (true, null);
+        var range = await _meteoriteService.GetYearRangeAsync(cancellationToken);
+        return Ok(range);
     }
 }

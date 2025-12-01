@@ -1,4 +1,6 @@
-﻿using Hangfire;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
@@ -139,6 +141,17 @@ public static class ServiceCollectionExtensions
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             options.IncludeXmlComments(xmlPath);
         });
+
+        return services;
+    }
+
+    public static IServiceCollection AddFluentValidation(this IServiceCollection services)
+    {
+        services
+            .AddFluentValidationAutoValidation()
+            .AddFluentValidationClientsideAdapters();
+
+        services.AddValidatorsFromAssemblyContaining<Program>();
 
         return services;
     }

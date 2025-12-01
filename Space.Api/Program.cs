@@ -1,7 +1,9 @@
+using FluentValidation.AspNetCore;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Space.Api.Auth;
 using Space.Api.Extensions;
+using Space.Api.Middleware;
 using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +22,8 @@ builder.Services.AddAppCors();
 builder.Services.AddAppSwagger();
 builder.Services.AddMemoryCache();
 builder.Services.AddControllers();
+builder.Services.AddFluentValidation();
+
 
 var app = builder.Build();
 
@@ -60,6 +64,8 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
 });
 
 app.UseCors("AllowFrontend");
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.MapControllers();
 
